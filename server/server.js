@@ -1,46 +1,25 @@
-const mongoose = require('mongoose');
+const express = require('express');
+const bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+const { mongoose } = require('./db/mongoose');
+const { Todo } = require('./models/todo');
+const { User } = require('./models/user');
 
-const Todo = mongoose.model('Todo', {
-  text: {
-    type: String,
-    required: true,
-    minlength: 1,
-    trim: true,
-  },
-  completed: {
-    type: Boolean,
-    default: false,
-  },
-  completedAt: {
-    type: Number,
-    default: null,
-  },
+const app = express();
+const port = 3000;
+
+app.use(bodyParser.json());
+
+app.post('/todos', (req, res) => {
+  const todo = new Todo({
+    text: req.body.text
+  });
+
+  todo.save()
+    .then(doc => res.send(doc))
+    .catch(err => res.status(400).send(err))
 });
 
-// const workoutTodo = new Todo({
-//   text: 'Work out',
-// });
-
-// workoutTodo.save()
-//   .then(doc => console.log('Saved todo:', doc))
-//   .catch(err => console.log('Unable to create todo :(', err))
-
-const User = mongoose.model('User', {
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 1,
-  },
+app.listen(port, () => {
+  console.log(`App is running @localhost:${port}`);
 });
-
-const userMay = new User({
-  email: 'may@hotmail.com',
-});
-
-userMay.save()
-  .then(doc => console.log('Saved user:', doc))
-  .catch(err => console.log('Unable to create user :(', err))
