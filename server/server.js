@@ -24,6 +24,15 @@ app.post('/todos', (req, res) => {
     .catch(err => res.status(400).send(err))
 });
 
+app.post('/users', (req, res) => {
+  const userData = _.pick(req.body, ['email', 'password']);
+  const user = new User(userData);
+
+  user.save()
+    .then((user) => res.send(user))
+    .catch((e) => res.status(400).send(e));
+});
+
 app.get('/todos', (req, res) => {
   Todo.find({})
     .then(todos => res.send({
