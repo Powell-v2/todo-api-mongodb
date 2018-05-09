@@ -40,6 +40,7 @@ const users = [
     _id: pavelTwoId,
     email: 'pavel.two@err.org',
     password: 'passForPavelTwo',
+    tokens: [],
   },
 ];
 
