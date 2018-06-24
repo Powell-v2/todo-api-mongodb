@@ -275,17 +275,17 @@ describe('POST /users/login', () => {
       .end((err, res) => {
         if (err) return done(err);
 
-        User.findById({ _id: users[0]._id })
+        User.findById(users[0]._id)
           .then((user) => {
-            expect(user.tokens[0].access).toBe('auth');
-            expect(user.tokens[0].token).toBe(res.headers['x-auth']);
+            expect(user.tokens[1].access).toBe('auth');
+            expect(user.tokens[1].token).toBe(res.headers['x-auth']);
             done();
           })
           .catch(done);
       });
   });
 
-  it.only('should reject invalid login', (done) => {
+  it('should reject invalid login', (done) => {
     request(app)
       .post('/users/login')
       .send({
@@ -306,5 +306,25 @@ describe('POST /users/login', () => {
           })
           .catch(done);
       })
+  });
+});
+
+describe('DELETE /users/me/token', () => {
+  it('should remove auth token on logout', (done) => {
+    const { token }= users[0].tokens[0]
+
+    request(app)
+      .delete('/users/me/token')
+      .set('x-auth', token)
+      .end((err, res) => {
+        if (err) return done(err);
+
+        User.findById(users[0]._id)
+          .then((user) => {
+            expect(user.tokens.length).toBe(0);
+            done();
+          })
+          .catch(done);
+      });
   });
 });
